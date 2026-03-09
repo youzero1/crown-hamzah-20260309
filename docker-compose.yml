@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  crown:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - crown_data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/crown.db
+      - NEXT_PUBLIC_APP_NAME=Crown
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    restart: unless-stopped
+
+volumes:
+  crown_data:
