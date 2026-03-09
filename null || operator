@@ -1,0 +1,256 @@
+null) return;
+
+    const inputValue = parseFloat(display);
+    const result = calculate(firstOperand, inputValue, operator);
+    const expression = `${firstOperand} ${operator} ${inputValue} = ${result}`;
+
+    setHistory((prev) => [expression, ...prev].slice(0, 5));
+    setDisplay(String(result));
+    setFirstOperand(null);
+    setOperator(null);
+    setWaitingForSecond(false);
+  }, [display, firstOperand, operator]);
+
+  const buttons = [
+    { label: 'C', type: 'function' as const, action: clear },
+    { label: '±', type: 'function' as const, action: toggleSign },
+    { label: '%', type: 'function' as const, action: handlePercent },
+    { label: '÷', type: 'operator' as const, action: () => handleOperator('÷') },
+    { label: '7', type: 'digit' as const, action: () => inputDigit('7') },
+    { label: '8', type: 'digit' as const, action: () => inputDigit('8') },
+    { label: '9', type: 'digit' as const, action: () => inputDigit('9') },
+    { label: '×', type: 'operator' as const, action: () => handleOperator('×') },
+    { label: '4', type: 'digit' as const, action: () => inputDigit('4') },
+    { label: '5', type: 'digit' as const, action: () => inputDigit('5') },
+    { label: '6', type: 'digit' as const, action: () => inputDigit('6') },
+    { label: '-', type: 'operator' as const, action: () => handleOperator('-') },
+    { label: '1', type: 'digit' as const, action: () => inputDigit('1') },
+    { label: '2', type: 'digit' as const, action: () => inputDigit('2') },
+    { label: '3', type: 'digit' as const, action: () => inputDigit('3') },
+    { label: '+', type: 'operator' as const, action: () => handleOperator('+') },
+    { label: '0', type: 'digit' as const, action: () => inputDigit('0'), wide: true },
+    { label: '.', type: 'digit' as const, action: inputDecimal },
+    { label: '=', type: 'equals' as const, action: handleEquals },
+  ];
+
+  return (
+    <div className={styles.calculator}>
+      {/* Display */}
+      <div className={styles.display}>
+        {operator && firstOperand !== null && (
+          <div className={styles.expression}>
+            {firstOperand} {operator}
+          </div>
+        )}
+        <div className={styles.value}>{display}</div>
+      </div>
+
+      {/* Buttons */}
+      <div className={styles.buttons}>
+        {buttons.map((btn) => (
+          <button
+            key={btn.label}
+            className={`${styles.btn} ${styles[btn.type]} ${btn.wide ? styles.wide : ''}`}
+            onClick={btn.action}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
+
+      {/* History */}
+      {history.length > 0 && (
+        <div className={styles.history}>
+          <div className={styles.historyTitle}>History</div>
+          {history.map((entry, i) => (
+            <div key={i} className={styles.historyEntry}>
+              {entry}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="src/styles/calculator.module.css">
+.calculator {
+  background: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.display {
+  padding: 24px 20px 16px;
+  background: #141414;
+  border-bottom: 1px solid #2e2e2e;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.expression {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #f5f5f5;
+  word-break: break-all;
+  text-align: right;
+  max-width: 100%;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  padding: 1px;
+  background: #2e2e2e;
+}
+
+.btn {
+  padding: 18px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: #1e1e1e;
+  color: #f5f5f5;
+}
+
+.btn:hover {
+  background: #2a2a2a;
+}
+
+.btn:active {
+  background: #333;
+}
+
+.digit {
+  color: #f5f5f5;
+}
+
+.function {
+  color: #FFD700;
+  background: #1a1a1a;
+}
+
+.function:hover {
+  background: #252525;
+}
+
+.operator {
+  background: #2a2200;
+  color: #FFD700;
+}
+
+.operator:hover {
+  background: #3a3000;
+}
+
+.equals {
+  background: #FFD700;
+  color: #0f0f0f;
+  font-weight: 800;
+}
+
+.equals:hover {
+  background: #FFE55C;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+.history {
+  padding: 16px 20px;
+  border-top: 1px solid #2e2e2e;
+}
+
+.historyTitle {
+  font-size: 0.75rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.historyEntry {
+  font-size: 0.85rem;
+  color: #888;
+  padding: 4px 0;
+  font-family: 'Courier New', monospace;
+}
+</file>
+
+<file path="src/components/ProductCard.tsx">
+'use client';
+import { useState } from 'react';
+import styles from './ProductCard.module.css';
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  category: string;
+  stock: number;
+}
+
+interface ProductCardProps {
+  product: Product;
+  onAddToCart?: () => void;
+}
+
+export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = async () => {
+    setAdding(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, quantity: 1 }),
+      });
+      if (res.ok) {
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+        onAddToCart?.();
+      }
+    } catch {
+      // ignore
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const inStock = product.stock > 0;
+
+  return (
+    <div className={styles.card}>
+      <div className={styles.imageWrapper}>
+        {product.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={product.imageUrl} alt={product.name} className={styles.image} />
+        ) : (
+          <div className={styles.placeholder}>♛</div>
+        )}
+        <span className={styles.category}>{product.category}</span>
+      </div>
+      <div className={styles.info}>
+        <h3 className={styles.name}>{product.name}</h3>
+        <p className={styles.description}>{product.description}</p>
+        <div className={styles.bottom}>
+          <span className={styles.price}>${product.price.
